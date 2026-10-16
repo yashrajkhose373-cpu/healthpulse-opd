@@ -88,8 +88,8 @@
         }
 
         .brand-badge {
-            background: #dcfce7;
-            color: #15803d;
+            background: #0a943b;
+            color: #ffffff;
             font-size: 0.75rem;
             font-weight: 700;
             padding: 0.2rem 0.6rem;
@@ -587,6 +587,12 @@
         </a>
 
         <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- GitHub Repository Link -->
+            <a href="https://github.com/yashrajkhose373-cpu/healthpulse-opd" target="_blank" class="server-status-pill" style="text-decoration: none; color: #0f172a; cursor: pointer;">
+                <i class="bi bi-github" style="font-size: 1.1rem;"></i>
+                <span>GitHub Repo</span>
+            </a>
+
             <!-- Spring Boot Backend Indicator -->
             <div class="server-status-pill" id="backendStatusPill">
                 <span class="pulse-dot" id="backendPulse"></span>
@@ -1085,6 +1091,7 @@
                     document.getElementById('backendPulse').style.background = '#10b981';
                 }
             } catch(e) {
+                // If cors blocks or offline
                 document.getElementById('backendStatusText').innerText = 'ACTIVE (:8080)';
             }
 
