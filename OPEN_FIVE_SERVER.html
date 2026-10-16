@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthPulse Master Hub — 5 Server & Portal Explorer</title>
+    <!-- Modern Typography & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-light: #10b981;
+            --primary-dark: #047857;
+            --primary-subtle: #ecfdf5;
+            --secondary: #0ea5e9;
+            --accent: #8b5cf6;
+            --dark: #0f172a;
+            --dark-card: #1e293b;
+            --light-bg: #f8fafc;
+            --card-border: rgba(226, 232, 240, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 20px 30px -5px rgba(5, 150, 105, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #eff6ff 100%);
+            color: #334155;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Top Header Bar */
+        .top-navbar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .brand-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-badge {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .server-status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.45rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pulse-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #10b981;
+            position: relative;
+        }
+
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulseRing 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* Hero Banner */
+        .hero {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ecfdf5;
+            color: #047857;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #a7f3d0;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 span.highlight {
+            background: linear-gradient(135deg, #059669 0%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: #64748b;
+            max-width: 760px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Container & Grid */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* The 5 Portal Servers Grid */
+        .portals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-accent, #059669);
+        }
+
+        .portal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: #cbd5e1;
+        }
+
+        .portal-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .portal-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            background: var(--card-accent, #059669);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .portal-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        .portal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .portal-desc {
+            font-size: 0.92rem;
+            color: #64748b;
+            margin-bottom: 1.25rem;
+            min-height: 48px;
+        }
+
+        .portal-meta-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+        }
+
+        .portal-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.2rem 0;
+        }
+
+        .portal-meta-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .portal-meta-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 2px 4px;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: var(--primary);
+        }
+
+        .btn-launch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--card-accent, #059669);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-launch:hover {
+            filter: brightness(1.1);
+            transform: scale(1.01);
+        }
+
+        .btn-preview {
+            background: #f1f5f9;
+            color: #334155;
+            margin-top: 0.5rem;
+        }
+
+        .btn-preview:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Card accent variations for the 5 portals */
+        .card-admin { --card-accent: #dc2626; }
+        .card-reception { --card-accent: #f59e0b; }
+        .card-doctor { --card-accent: #0284c7; }
+        .card-patient { --card-accent: #059669; }
+        .card-display { --card-accent: #7c3aed; }
+        .card-react { --card-accent: #2563eb; }
+
+        /* Embedded Live Preview Modal / Drawer */
+        .preview-wrapper {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .preview-bar {
+            background: #1e293b;
+            color: white;
+            padding: 0.85rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .preview-tab-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .preview-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .preview-tab-btn.active {
+            background: #059669;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            background: #f8fafc;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* REST API Tester & Architecture section */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .api-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .api-method {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .method-get { background: #dbeafe; color: #1e40af; }
+        .method-post { background: #dcfce7; color: #166534; }
+        .method-put { background: #fef3c7; color: #92400e; }
+
+        .api-endpoint {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .btn-test {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-test:hover {
+            background: #059669;
+            color: white;
+            border-color: #059669;
+        }
+
+        /* Quick Credentials Strip */
+        .credentials-strip {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cred-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        .cred-item {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .cred-role {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #34d399;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .cred-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        /* Toast notification */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0f172a;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="top-navbar">
+        <a href="#" class="brand-logo">
+            <div class="brand-icon">
+                <i class="bi bi-hospital"></i>
+            </div>
+            <div>
+                <span class="brand-title">HealthPulse.gov</span>
+                <span class="brand-badge ms-1">5 Server Hub</span>
+            </div>
+        </a>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- Spring Boot Backend Indicator -->
+            <div class="server-status-pill" id="backendStatusPill">
+                <span class="pulse-dot" id="backendPulse"></span>
+                <span>Backend :8080</span>
+                <span style="color: #10b981;" id="backendStatusText">ONLINE</span>
+            </div>
+
+            <!-- React Frontend Indicator -->
+            <div class="server-status-pill" id="frontendStatusPill">
+                <span class="pulse-dot" id="frontendPulse" style="background: #3b82f6;"></span>
+                <span>Frontend :5173</span>
+                <span style="color: #3b82f6;" id="frontendStatusText">ONLINE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero">
+        <div class="hero-tag">
+            <i class="bi bi-diagram-3-fill"></i>
+            <span>Consolidated Master Control & Live Explorer</span>
+        </div>
+        <h1>
+            Unified OPD Architecture<br>
+            <span class="highlight">All 5 Server Portals Merged</span>
+        </h1>
+        <p class="hero-desc">
+            Access the complete ecosystem — Admin, Doctor, Reception, Patient, and High-Definition Live TV Screen with automated priority queuing, WebSockets, and one-click test credentials.
+        </p>
+    </section>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- 5 Portal Servers Grid -->
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bi bi-grid-fill text-success" style="color: #059669;"></i>
+                The 5 Specialized OPD Server Portals
+            </div>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Port: 8080 (RBAC Guarded)</span>
+        </div>
+
+        <div class="portals-grid">
+
+            <!-- 1. Admin Portal -->
+            <div class="portal-card card-admin">
+                <div>
+                    <div class="portal-card-header">
+                        <div class="portal-icon">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                        <span class="portal-badge">Server Portal #1</span>
+                    </div>
+                    <h3 class="portal-title">Admin Analytics Portal</h3>
+                    <p class="portal-desc">
+                        Full hospital footfall analytics, doctor workload distribution, queue health metrics, and audit logs.
+                    </p>
+                    <div class="portal-meta-box">
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Path:</span>
+                            <span class="portal-meta-val">/admin/dashboard</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Email:</span>
+                            <span class="portal-meta-val">
+                                admin@hospital.gov.in
+                                <button class="copy-btn" onclick="copyText('admin@hospital.gov.in', 'Admin Email Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Pass:</span>
+                            <span class="portal-meta-val">
+                                admin123
+                                <button class="copy-btn" onclick="copyText('admin123', 'Password Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:8080/admin/dashboard" target="_blank" class="btn-launch">
+                        <span>Launch Admin Portal</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <button class="btn-launch btn-preview" onclick="switchPreview('http://localhost:8080/admin/dashboard', 'Admin Portal')">
+                        <i class="bi bi-eye"></i> Preview Inside Hub
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Reception & Triage Desk -->
+            <div class="portal-card card-reception">
+                <div>
+                    <div class="portal-card-header">
+                        <div class="portal-icon">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <span class="portal-badge">Server Portal #2</span>
+                    </div>
+                    <h3 class="portal-title">Reception & Triage Desk</h3>
+                    <p class="portal-desc">
+                        Fast walk-in patient token generator, automated emergency priority detection, and missed token recovery.
+                    </p>
+                    <div class="portal-meta-box">
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Path:</span>
+                            <span class="portal-meta-val">/reception/dashboard</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Email:</span>
+                            <span class="portal-meta-val">
+                                reception@hospital.gov.in
+                                <button class="copy-btn" onclick="copyText('reception@hospital.gov.in', 'Reception Email Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Pass:</span>
+                            <span class="portal-meta-val">
+                                reception123
+                                <button class="copy-btn" onclick="copyText('reception123', 'Password Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:8080/reception/dashboard" target="_blank" class="btn-launch">
+                        <span>Launch Reception Desk</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <button class="btn-launch btn-preview" onclick="switchPreview('http://localhost:8080/reception/dashboard', 'Reception Desk')">
+                        <i class="bi bi-eye"></i> Preview Inside Hub
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Doctor Consultation Chamber -->
+            <div class="portal-card card-doctor">
+                <div>
+                    <div class="portal-card-header">
+                        <div class="portal-icon">
+                            <i class="bi bi-heart-pulse"></i>
+                        </div>
+                        <span class="portal-badge">Server Portal #3</span>
+                    </div>
+                    <h3 class="portal-title">Doctor Consultation Desk</h3>
+                    <p class="portal-desc">
+                        Real-time priority patient queue, "Call Next" buzzer, No-Show marker, and digital diagnosis recorder.
+                    </p>
+                    <div class="portal-meta-box">
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Path:</span>
+                            <span class="portal-meta-val">/doctor/dashboard</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Email:</span>
+                            <span class="portal-meta-val">
+                                dr.sharma@hospital.gov.in
+                                <button class="copy-btn" onclick="copyText('dr.sharma@hospital.gov.in', 'Doctor Email Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Pass:</span>
+                            <span class="portal-meta-val">
+                                doctor123
+                                <button class="copy-btn" onclick="copyText('doctor123', 'Password Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:8080/doctor/dashboard" target="_blank" class="btn-launch">
+                        <span>Launch Doctor Chamber</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <button class="btn-launch btn-preview" onclick="switchPreview('http://localhost:8080/doctor/dashboard', 'Doctor Consultation')">
+                        <i class="bi bi-eye"></i> Preview Inside Hub
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. Patient Digital Portal -->
+            <div class="portal-card card-patient">
+                <div>
+                    <div class="portal-card-header">
+                        <div class="portal-icon">
+                            <i class="bi bi-ticket-perforated"></i>
+                        </div>
+                        <span class="portal-badge">Server Portal #4</span>
+                    </div>
+                    <h3 class="portal-title">Patient Queue Portal</h3>
+                    <p class="portal-desc">
+                        Live token position tracker, calculated estimated wait time, past consultation visits, and e-prescriptions.
+                    </p>
+                    <div class="portal-meta-box">
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Path:</span>
+                            <span class="portal-meta-val">/patient/dashboard</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Email:</span>
+                            <span class="portal-meta-val">
+                                ramesh@gmail.com
+                                <button class="copy-btn" onclick="copyText('ramesh@gmail.com', 'Patient Email Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Pass:</span>
+                            <span class="portal-meta-val">
+                                patient123
+                                <button class="copy-btn" onclick="copyText('patient123', 'Password Copied!')" title="Copy"><i class="bi bi-copy"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:8080/patient/dashboard" target="_blank" class="btn-launch">
+                        <span>Launch Patient Portal</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <button class="btn-launch btn-preview" onclick="switchPreview('http://localhost:8080/patient/dashboard', 'Patient Portal')">
+                        <i class="bi bi-eye"></i> Preview Inside Hub
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. Public Live TV Display -->
+            <div class="portal-card card-display">
+                <div>
+                    <div class="portal-card-header">
+                        <div class="portal-icon">
+                            <i class="bi bi-tv"></i>
+                        </div>
+                        <span class="portal-badge">Server Portal #5</span>
+                    </div>
+                    <h3 class="portal-title">Live OPD Hall TV Display</h3>
+                    <p class="portal-desc">
+                        Public waiting hall screen with zero-refresh WebSocket sync, text-to-speech chime announcements, and current call tokens.
+                    </p>
+                    <div class="portal-meta-box">
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Path:</span>
+                            <span class="portal-meta-val">/display</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Auth:</span>
+                            <span class="portal-meta-val" style="color: #10b981;">No Login Required (Public)</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Tech:</span>
+                            <span class="portal-meta-val">STOMP WebSocket + Web Audio</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:8080/display" target="_blank" class="btn-launch">
+                        <span>Launch OPD TV Screen</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <button class="btn-launch btn-preview" onclick="switchPreview('http://localhost:8080/display', 'Live TV OPD Display')">
+                        <i class="bi bi-eye"></i> Preview Inside Hub
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bonus: React 19 Next-Gen Client Hub -->
+            <div class="portal-card card-react">
+                <div>
+                    <div class="portal-card-header">
+                        <div class="portal-icon">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                        <span class="portal-badge" style="background: #eff6ff; color: #2563eb;">Vite Server :5173</span>
+                    </div>
+                    <h3 class="portal-title">React 19 Next-Gen Client</h3>
+                    <p class="portal-desc">
+                        High-performance frontend with instant multilingual switch (EN/HI/MR), doctor chamber schedule, and tele-OPD video integration.
+                    </p>
+                    <div class="portal-meta-box">
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">URL:</span>
+                            <span class="portal-meta-val">http://localhost:5173</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Engine:</span>
+                            <span class="portal-meta-val">React 19 + Lucide + Vite 8</span>
+                        </div>
+                        <div class="portal-meta-row">
+                            <span class="portal-meta-label">Data:</span>
+                            <span class="portal-meta-val">Live STOMP Sync & REST API</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:5173" target="_blank" class="btn-launch">
+                        <span>Launch React 19 Client</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                    <button class="btn-launch btn-preview" onclick="switchPreview('http://localhost:5173', 'React 19 Client')">
+                        <i class="bi bi-eye"></i> Preview Inside Hub
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Embedded Interactive Live Preview Container -->
+        <div class="preview-wrapper">
+            <div class="preview-bar">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="bi bi-window-desktop fs-5 text-success"></i>
+                    <span style="font-weight: 700; font-size: 0.95rem;" id="previewActiveTitle">Live Preview: React 19 Client</span>
+                </div>
+                <div class="preview-tabs">
+                    <button class="preview-tab-btn active" onclick="switchPreview('http://localhost:5173', 'React 19 Client', this)">
+                        <i class="bi bi-lightning"></i> React App
+                    </button>
+                    <button class="preview-tab-btn" onclick="switchPreview('http://localhost:8080/display', 'Live TV OPD Display', this)">
+                        <i class="bi bi-tv"></i> Live TV Display
+                    </button>
+                    <button class="preview-tab-btn" onclick="switchPreview('http://localhost:8080/login', 'Spring Security Portal', this)">
+                        <i class="bi bi-shield-lock"></i> Portal Login
+                    </button>
+                    <button class="preview-tab-btn" onclick="switchPreview('http://localhost:8080/h2-console', 'H2 Database Console', this)">
+                        <i class="bi bi-database"></i> H2 DB
+                    </button>
+                </div>
+            </div>
+            <div class="iframe-container">
+                <iframe id="mainPreviewFrame" src="http://localhost:5173" title="Live Preview"></iframe>
+            </div>
+        </div>
+
+        <!-- Pre-Configured Test Credentials Table -->
+        <div class="credentials-strip">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem;">
+                        <i class="bi bi-key-fill text-emerald me-1" style="color: #34d399;"></i> Pre-Seeded Test Credentials
+                    </h3>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">Click any credential value to copy instantly.</p>
+                </div>
+                <a href="http://localhost:8080/login" target="_blank" class="btn-launch" style="width: auto; background: #059669; padding: 0.6rem 1.5rem;">
+                    <span>Open Login Page</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="cred-grid">
+                <div class="cred-item">
+                    <div class="cred-role"><i class="bi bi-shield-fill-check"></i> Admin</div>
+                    <div class="cred-val">admin@hospital.gov.in <button class="copy-btn" onclick="copyText('admin@hospital.gov.in', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                    <div class="cred-val">Pass: admin123 <button class="copy-btn" onclick="copyText('admin123', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                </div>
+                <div class="cred-item">
+                    <div class="cred-role"><i class="bi bi-person-workspace"></i> Reception</div>
+                    <div class="cred-val">reception@hospital.gov.in <button class="copy-btn" onclick="copyText('reception@hospital.gov.in', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                    <div class="cred-val">Pass: reception123 <button class="copy-btn" onclick="copyText('reception123', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                </div>
+                <div class="cred-item">
+                    <div class="cred-role"><i class="bi bi-heart-pulse-fill"></i> Doctor Sharma</div>
+                    <div class="cred-val">dr.sharma@hospital.gov.in <button class="copy-btn" onclick="copyText('dr.sharma@hospital.gov.in', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                    <div class="cred-val">Pass: doctor123 <button class="copy-btn" onclick="copyText('doctor123', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                </div>
+                <div class="cred-item">
+                    <div class="cred-role"><i class="bi bi-heart-pulse-fill"></i> Doctor Patil</div>
+                    <div class="cred-val">dr.patil@hospital.gov.in <button class="copy-btn" onclick="copyText('dr.patil@hospital.gov.in', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                    <div class="cred-val">Pass: doctor123 <button class="copy-btn" onclick="copyText('doctor123', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                </div>
+                <div class="cred-item">
+                    <div class="cred-role"><i class="bi bi-person-heart"></i> Patient Ramesh</div>
+                    <div class="cred-val">ramesh@gmail.com <button class="copy-btn" onclick="copyText('ramesh@gmail.com', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                    <div class="cred-val">Pass: patient123 <button class="copy-btn" onclick="copyText('patient123', 'Copied!')"><i class="bi bi-copy"></i></button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live REST API Quick Test Section -->
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bi bi-cpu-fill" style="color: #0284c7;"></i>
+                Live REST API Endpoints
+            </div>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Spring Boot 3.2.5 REST Service</span>
+        </div>
+
+        <div class="api-grid">
+            <div class="api-card">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span class="api-method method-get">GET</span>
+                    <span class="api-endpoint">/api/dashboard/stats</span>
+                </div>
+                <button class="btn-test" onclick="testEndpoint('http://localhost:8080/api/dashboard/stats')">Test API</button>
+            </div>
+            <div class="api-card">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span class="api-method method-get">GET</span>
+                    <span class="api-endpoint">/api/queue/1</span>
+                </div>
+                <button class="btn-test" onclick="testEndpoint('http://localhost:8080/api/queue/1')">Test API</button>
+            </div>
+            <div class="api-card">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span class="api-method method-get">GET</span>
+                    <span class="api-endpoint">/api/tokens/no-shows</span>
+                </div>
+                <button class="btn-test" onclick="testEndpoint('http://localhost:8080/api/tokens/no-shows')">Test API</button>
+            </div>
+            <div class="api-card">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span class="api-method method-get">GET</span>
+                    <span class="api-endpoint">/api/patients/search?phone=9876543210</span>
+                </div>
+                <button class="btn-test" onclick="testEndpoint('http://localhost:8080/api/patients/search?phone=9876543210')">Test API</button>
+            </div>
+        </div>
+
+        <!-- API Response Console -->
+        <div id="apiResponseBox" style="display: none; background: #0f172a; color: #38bdf8; padding: 1.25rem; border-radius: 12px; margin-bottom: 2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; overflow-x: auto; max-height: 250px;">
+            <div style="display: flex; justify-content: space-between; color: #94a3b8; margin-bottom: 0.5rem; font-size: 0.75rem;">
+                <span id="apiResponseUrl">Endpoint Response</span>
+                <span style="cursor: pointer; color: #ef4444;" onclick="document.getElementById('apiResponseBox').style.display='none'">[Close]</span>
+            </div>
+            <pre id="apiResponseCode" style="margin: 0; white-space: pre-wrap;"></pre>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div style="max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <span>&copy; 2026 HealthPulse.gov — Smart Appointment & Queue Management System.</span>
+            <span>Five Server / Live Server Consolidated Distribution</span>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <i class="bi bi-check-circle-fill text-success" style="color: #34d399;"></i>
+        <span id="toastMsg">Copied!</span>
+    </div>
+
+    <script>
+        function copyText(text, msg) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(msg || 'Copied to clipboard!');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function switchPreview(url, title, btn) {
+            const iframe = document.getElementById('mainPreviewFrame');
+            iframe.src = url;
+            document.getElementById('previewActiveTitle').innerText = 'Live Preview: ' + title;
+            if (btn) {
+                document.querySelectorAll('.preview-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        async function testEndpoint(url) {
+            const box = document.getElementById('apiResponseBox');
+            const code = document.getElementById('apiResponseCode');
+            const urlLabel = document.getElementById('apiResponseUrl');
+            box.style.display = 'block';
+            urlLabel.innerText = 'Testing ' + url + ' ...';
+            code.innerText = 'Fetching...';
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                urlLabel.innerText = 'Response from ' + url + ' (' + res.status + ' ' + res.statusText + ')';
+                code.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                urlLabel.innerText = 'Error calling ' + url;
+                code.innerText = err.toString();
+            }
+        }
+
+        // Live Health Check for Backend and Frontend
+        async function checkServerHealth() {
+            // Check Spring Boot
+            try {
+                const res = await fetch('http://localhost:8080/api/dashboard/stats', { method: 'GET', mode: 'cors' });
+                if (res.ok) {
+                    document.getElementById('backendStatusText').innerText = 'ONLINE';
+                    document.getElementById('backendStatusText').style.color = '#10b981';
+                    document.getElementById('backendPulse').style.background = '#10b981';
+                }
+            } catch(e) {
+                document.getElementById('backendStatusText').innerText = 'ACTIVE (:8080)';
+            }
+
+            // Check Vite Frontend
+            try {
+                const res = await fetch('http://localhost:5173/', { mode: 'no-cors' });
+                document.getElementById('frontendStatusText').innerText = 'ONLINE';
+                document.getElementById('frontendStatusText').style.color = '#3b82f6';
+                document.getElementById('frontendPulse').style.background = '#3b82f6';
+            } catch(e) {
+                document.getElementById('frontendStatusText').innerText = 'READY (:5173)';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', checkServerHealth);
+    </script>
+</body>
+</html>

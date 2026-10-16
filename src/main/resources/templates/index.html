@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Hospital Queue & Appointment System</title>
+    <!-- Google Fonts & Bootstrap 5 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Modern Glassmorphism Navigation Bar -->
+    <nav class="navbar navbar-expand-lg modern-navbar sticky-top py-3">
+        <div class="container px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                <div class="p-2 rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-hospital-fill fs-5"></i>
+                </div>
+                <div>
+                    <span class="fw-bold text-dark fs-5">HealthPulse</span>
+                    <span class="text-success fw-bold">.gov</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-dark active" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-muted" href="http://localhost:5173/" target="_blank">Live OPD Board</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('DOCTOR')">
+                        <a class="nav-link fw-semibold text-muted" th:href="@{/doctor/dashboard}">Doctor Portal</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('RECEPTION') or hasRole('ADMIN')">
+                        <a class="nav-link fw-semibold text-muted" th:href="@{/reception/dashboard}">Reception Desk</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link fw-semibold text-muted" th:href="@{/admin/dashboard}">Admin</a>
+                    </li>
+                </ul>
+
+                <!-- Language Switcher & Authentication Buttons -->
+                <div class="d-flex align-items-center gap-3">
+                    <div class="btn-group btn-group-sm">
+                        <a th:href="@{/(lang='en')}" class="btn btn-sm btn-outline-secondary">EN</a>
+                        <a th:href="@{/(lang='hi')}" class="btn btn-sm btn-outline-secondary">हिंदी</a>
+                        <a th:href="@{/(lang='mr')}" class="btn btn-sm btn-outline-secondary">मराठी</a>
+                    </div>
+
+                    <div sec:authorize="!isAuthenticated()" class="d-flex align-items-center gap-2">
+                        <a th:href="@{/login}" class="btn btn-soft py-2 px-4 fs-6">Sign In</a>
+                        <a th:href="@{/register}" class="btn btn-emerald py-2 px-4 fs-6">
+                            <span>Book Token</span> <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border py-2 px-3 fw-semibold">
+                            <i class="bi bi-person-circle text-success me-1"></i> <span sec:authentication="name">User</span>
+                        </span>
+                        <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Floating Glassmorphic UI Widgets -->
+    <section class="py-5 overflow-hidden">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                
+                <!-- Left Hero Content -->
+                <div class="col-lg-6">
+                    <!-- Pill Tag -->
+                    <div class="hero-pill-tag">
+                        <i class="bi bi-shield-check text-success me-1 fs-6"></i>
+                        <span>Trusted by 10,000+ patients daily</span>
+                    </div>
+
+                    <!-- Main Catchy Heading -->
+                    <h1 class="hero-heading mb-4">
+                        Your Health,<br>
+                        <span class="highlight">Our Priority</span>
+                    </h1>
+
+                    <!-- Subtitle -->
+                    <p class="hero-lead mb-4">
+                        Providing trusted government healthcare services with real-time token tracking, priority handling, and compassionate doctor consultations — designed around you.
+                    </p>
+
+                    <!-- CTA Buttons -->
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-5">
+                        <a th:href="@{/register}" class="btn btn-emerald">
+                            <span>Book Appointment</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="http://localhost:5173/" target="_blank" class="btn btn-soft">
+                            <i class="bi bi-broadcast text-success me-1"></i> Live OPD Queue
+                        </a>
+                    </div>
+
+                    <!-- Trust Checklist Badges -->
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="feature-badge-item">
+                            <i class="bi bi-activity text-success"></i>
+                            <span>24/7 Emergency</span>
+                        </div>
+                        <div class="feature-badge-item">
+                            <i class="bi bi-patch-check-fill text-success"></i>
+                            <span>Certified Doctors</span>
+                        </div>
+                        <div class="feature-badge-item">
+                            <i class="bi bi-clock-history text-success"></i>
+                            <span>Zero Wait Delays</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Hero Canvas with Floating Modern Cards -->
+                <div class="col-lg-6 position-relative">
+                    <div class="hero-image-wrapper">
+
+                        <!-- Floating Card: Next Available Slot -->
+                        <div class="floating-card card-top-left">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-success bg-opacity-10 text-success p-2 rounded-3 fs-5">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted" style="font-size: 0.75rem; font-weight: 600;">Next available</div>
+                                    <div class="fw-bold text-dark" style="font-size: 0.95rem;">Today, 2:30 PM</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Card: Live Support Online -->
+                        <div class="floating-card card-top-right">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="pulse-dot"></span>
+                                <span class="fw-bold text-dark" style="font-size: 0.85rem;">Live Queue Active</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Pill: Quick Book Action -->
+                        <a th:href="@{/register}" class="floating-pill-cta text-decoration-none">
+                            <i class="bi bi-calendar-plus"></i>
+                            <span>Book Now</span>
+                        </a>
+
+                        <!-- Floating Card: Patient Testimonial Review -->
+                        <div class="floating-card card-bottom-right">
+                            <div class="d-flex align-items-center gap-1 text-warning mb-1" style="font-size: 0.8rem;">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <span class="fw-bold text-dark ms-1">4.9</span>
+                            </div>
+                            <p class="text-muted mb-2" style="font-size: 0.8rem; line-height: 1.4;">
+                                "The priority queue is transparent and waiting time calculation is accurate."
+                            </p>
+                            <div class="fw-bold text-dark" style="font-size: 0.78rem;">— Ramesh M. (Senior Citizen)</div>
+                        </div>
+
+                        <!-- Main Studio Portrait Image -->
+                        <div class="hero-main-img-container">
+                            <img th:src="@{/images/doctor_hero.jpg}" alt="Friendly Doctor" class="hero-main-img">
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Active OPD Departments Section -->
+    <section class="py-5 bg-white">
+        <div class="container py-3">
+            <div class="row align-items-end justify-content-between mb-4">
+                <div class="col-md-7">
+                    <span class="brand-badge mb-2"><i class="bi bi-clipboard2-pulse-fill"></i> Government OPD Specialists</span>
+                    <h2 class="fw-bold text-dark">Available Consultation Chambers</h2>
+                    <p class="text-muted mb-0">Check live availability, average consultation time, and assigned rooms.</p>
+                </div>
+                <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                    <a href="http://localhost:5173/" target="_blank" class="btn btn-outline-success rounded-pill px-4 fw-bold">
+                        <i class="bi bi-tv me-1"></i> Open Waiting Room Screen
+                    </a>
+                </div>
+            </div>
+
+            <!-- Doctor Cards Grid -->
+            <div class="row g-4">
+                <div class="col-md-4" th:each="doc : ${doctors}">
+                    <div class="clean-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bold" th:text="${doc.roomNo}">Room 101</span>
+                            <span class="d-inline-flex align-items-center gap-1 text-success small fw-bold" th:if="${doc.isAvailable}">
+                                <span class="pulse-dot"></span> Online
+                            </span>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1" th:text="${doc.name}">Dr. Rajesh Sharma</h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-stethoscope text-success me-1"></i> <span th:text="${doc.department}">General Medicine</span></p>
+                        
+                        <div class="p-3 bg-light rounded-3 mb-3 d-flex justify-content-between align-items-center">
+                            <span class="small text-muted">Avg Consult Time</span>
+                            <strong class="text-dark"><span th:text="${doc.avgConsultMinutes}">8</span> mins / patient</strong>
+                        </div>
+
+                        <a th:href="@{/register}" class="btn btn-soft w-100 fw-bold py-2 text-center text-decoration-none">
+                            Book Token
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All System Modules & Quick Access Links -->
+            <div class="mt-5">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-grid-fill text-success fs-5"></i>
+                    <h4 class="fw-bold mb-0 text-dark">Quick Access Portals & Features</h4>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4 col-sm-6">
+                        <a href="http://localhost:5173/" target="_blank" class="clean-card p-3 d-flex align-items-center gap-3 text-decoration-none text-dark h-100 shadow-sm border">
+                            <div class="p-3 rounded-3 bg-primary bg-opacity-10 text-primary fs-4">
+                                <i class="bi bi-tv"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Live OPD Display Board</h6>
+                                <small class="text-muted">Real-time TV screen for waiting hall</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <a th:href="@{/register}" class="clean-card p-3 d-flex align-items-center gap-3 text-decoration-none text-dark h-100 shadow-sm border">
+                            <div class="p-3 rounded-3 bg-success bg-opacity-10 text-success fs-4">
+                                <i class="bi bi-ticket-perforated"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Book Token / Appointment</h6>
+                                <small class="text-muted">Instant token & wait time estimate</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <a th:href="@{/doctor/dashboard}" class="clean-card p-3 d-flex align-items-center gap-3 text-decoration-none text-dark h-100 shadow-sm border">
+                            <div class="p-3 rounded-3 bg-info bg-opacity-10 text-info fs-4">
+                                <i class="bi bi-heart-pulse"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Doctor Consultation Desk</h6>
+                                <small class="text-muted">Call next patient & write prescriptions</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <a th:href="@{/reception/dashboard}" class="clean-card p-3 d-flex align-items-center gap-3 text-decoration-none text-dark h-100 shadow-sm border">
+                            <div class="p-3 rounded-3 bg-warning bg-opacity-10 text-warning fs-4">
+                                <i class="bi bi-person-badge"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Reception / Triage Counter</h6>
+                                <small class="text-muted">Walk-in generation & priority queue</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <a th:href="@{/admin/dashboard}" class="clean-card p-3 d-flex align-items-center gap-3 text-decoration-none text-dark h-100 shadow-sm border">
+                            <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4">
+                                <i class="bi bi-speedometer2"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Admin Analytics Dashboard</h6>
+                                <small class="text-muted">OPD statistics, doctor load & logs</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <a th:href="@{/h2-console}" target="_blank" class="clean-card p-3 d-flex align-items-center gap-3 text-decoration-none text-dark h-100 shadow-sm border">
+                            <div class="p-3 rounded-3 bg-secondary bg-opacity-10 text-secondary fs-4">
+                                <i class="bi bi-database"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Database Console</h6>
+                                <small class="text-muted">H2 In-Memory DB inspection</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Demo Credentials Box -->
+            <div class="clean-card p-4 mt-4 bg-light border-0">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-key-fill text-success fs-5"></i>
+                    <h6 class="fw-bold mb-0 text-dark">Quick Test Credentials (Preloaded)</h6>
+                </div>
+                <div class="row g-3 small text-muted">
+                    <div class="col-md-3"><strong>Admin:</strong> <code>admin@hospital.gov.in</code> / <code>admin123</code></div>
+                    <div class="col-md-3"><strong>Reception:</strong> <code>reception@hospital.gov.in</code> / <code>reception123</code></div>
+                    <div class="col-md-3"><strong>Doctor:</strong> <code>dr.sharma@hospital.gov.in</code> / <code>doctor123</code></div>
+                    <div class="col-md-3"><strong>Patient:</strong> <code>ramesh@gmail.com</code> / <code>patient123</code></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Clean Footer -->
+    <footer class="py-4 border-top bg-white mt-auto">
+        <div class="container text-center text-muted small">
+            &copy; 2026 HealthPulse.gov — Smart Appointment & Queue Management System. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

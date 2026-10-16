@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIVE OPD QUEUE DISPLAY - Government Hospital</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #0c1017;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+        .display-header {
+            background: linear-gradient(90deg, #0a3d62, #1e3799);
+            border-bottom: 4px solid #f6b93b;
+        }
+        .doctor-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .doctor-card.active-doctor {
+            border: 2px solid #38ada9;
+            box-shadow: 0 0 15px rgba(56, 173, 169, 0.3);
+        }
+        .token-current {
+            background: radial-gradient(circle, #eb2f06 0%, #b71540 100%);
+            color: white;
+            font-size: 3.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            animation: pulse-red 1.8s infinite;
+        }
+        .next-queue-item {
+            background: #21262d;
+            border-left: 4px solid #f6b93b;
+        }
+        .clock-box {
+            font-family: monospace;
+            font-size: 1.8rem;
+            color: #f6b93b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Live Display Header -->
+    <header class="display-header py-3 px-4 shadow-lg">
+        <div class="row align-items-center">
+            <div class="col-md-6 d-flex align-items-center">
+                <i class="bi bi-hospital-fill text-warning fs-1 me-3"></i>
+                <div>
+                    <h2 class="fw-bold mb-0 text-white" th:text="#{app.hospital_name}">District Government Hospital</h2>
+                    <span class="badge bg-danger text-uppercase px-3 py-1">
+                        <i class="bi bi-broadcast"></i> <span th:text="#{queue.title}">LIVE OPD QUEUE STATUS</span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="d-inline-flex align-items-center bg-dark bg-opacity-50 px-4 py-2 rounded-pill">
+                    <i class="bi bi-clock me-2 text-warning fs-4"></i>
+                    <span id="liveClock" class="clock-box">--:--:--</span>
+                </div>
+                <div class="btn-group btn-group-sm ms-3">
+                    <a th:href="@{/display(lang='en')}" class="btn btn-sm btn-outline-light">EN</a>
+                    <a th:href="@{/display(lang='hi')}" class="btn btn-sm btn-outline-light">HI</a>
+                    <a th:href="@{/display(lang='mr')}" class="btn btn-sm btn-outline-light">MR</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Doctors Live Boards Grid -->
+    <div class="container-fluid p-4">
+        <div class="row g-4" id="doctorsGrid">
+            <div class="col-lg-4 col-md-6" th:each="doc : ${doctors}" th:id="'doc-card-' + ${doc.id}">
+                <div class="doctor-card p-4 h-100 shadow">
+                    <!-- Room & Doctor Info -->
+                    <div class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
+                        <div>
+                            <span class="badge bg-warning text-dark fs-6 fw-bold px-3 py-1 rounded-pill" th:text="${doc.roomNo}">Room 101</span>
+                            <h4 class="fw-bold mt-2 mb-1 text-info" th:text="${doc.name}">Dr. Rajesh Sharma</h4>
+                            <div class="text-light small opacity-75" th:text="${doc.department}">General Medicine</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success" th:if="${doc.isAvailable}">ONLINE</span>
+                            <span class="badge bg-secondary" th:unless="${doc.isAvailable}">OFFLINE</span>
+                        </div>
+                    </div>
+
+                    <!-- Now Calling Block -->
+                    <div class="text-center my-3 p-3 bg-dark bg-opacity-75 rounded-4 border border-secondary">
+                        <div class="text-uppercase small fw-bold text-warning tracking-wide mb-1" th:text="#{queue.now_calling}">NOW CALLING</div>
+                        <div th:id="'current-token-' + ${doc.id}" class="token-current rounded-3 py-2 my-2">
+                            --
+                        </div>
+                        <div th:id="'current-patient-' + ${doc.id}" class="fw-bold fs-5 text-light">Waiting for doctor...</div>
+                    </div>
+
+                    <!-- Upcoming Queue List -->
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-uppercase small fw-bold text-secondary mb-0">Upcoming Tokens</h6>
+                            <span class="badge bg-info text-dark" th:id="'waiting-count-' + ${doc.id}">0 waiting</span>
+                        </div>
+                        <div class="queue-list" th:id="'queue-list-' + ${doc.id}" style="min-height: 180px;">
+                            <div class="text-center text-muted py-4 small">No patients in queue</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SockJS & STOMP for Realtime updates -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script>
+        // Realtime Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('liveClock').textContent = now.toLocaleTimeString('en-IN', { hour12: true });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Audio Announcement for Called Tokens
+        function playTokenChime(tokenNo, roomNo) {
+            try {
+                const utterance = new SpeechSynthesisUtterance(`Token number ${tokenNo}, please proceed to ${roomNo}`);
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.log("Speech not supported or blocked");
+            }
+        }
+
+        // Fetch Initial Queue Data for each doctor
+        document.addEventListener("DOMContentLoaded", function() {
+            // Load state for all doctors
+            loadAllQueues();
+            connectGlobalWebSocket();
+        });
+
+        function loadAllQueues() {
+            const docCards = document.querySelectorAll('[id^="doc-card-"]');
+            docCards.forEach(card => {
+                const docId = card.id.replace('doc-card-', '');
+                fetch(`/api/queue/${docId}`)
+                    .then(res => res.json())
+                    .then(data => renderDoctorQueue(data))
+                    .catch(err => console.error(err));
+            });
+        }
+
+        function renderDoctorQueue(data) {
+            const docId = data.doctorId;
+            const currentTokenElem = document.getElementById(`current-token-${docId}`);
+            const currentPatientElem = document.getElementById(`current-patient-${docId}`);
+            const waitingCountElem = document.getElementById(`waiting-count-${docId}`);
+            const queueListElem = document.getElementById(`queue-list-${docId}`);
+
+            if (!currentTokenElem) return;
+
+            if (data.currentlyCalled) {
+                const prev = currentTokenElem.textContent.trim();
+                currentTokenElem.textContent = data.currentlyCalled.tokenNo;
+                currentPatientElem.textContent = data.currentlyCalled.patientName + " (" + data.currentlyCalled.priorityLabel + ")";
+                
+                if (prev !== data.currentlyCalled.tokenNo && prev !== "--") {
+                    playTokenChime(data.currentlyCalled.tokenNo, data.roomNo);
+                }
+            } else {
+                currentTokenElem.textContent = "--";
+                currentPatientElem.textContent = "Waiting for doctor...";
+            }
+
+            waitingCountElem.textContent = `${data.totalWaiting} waiting`;
+
+            if (data.waitingQueue && data.waitingQueue.length > 0) {
+                let html = '<div class="list-group list-group-flush">';
+                data.waitingQueue.slice(0, 4).forEach((item, index) => {
+                    let badgeClass = 'bg-success';
+                    if (item.priority === 'EMERGENCY') badgeClass = 'bg-danger';
+                    else if (item.priority === 'SENIOR_OR_PREGNANT') badgeClass = 'bg-warning text-dark';
+
+                    html += `
+                        <div class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center py-2 px-1">
+                            <div>
+                                <strong class="fs-6 text-warning">${item.tokenNo}</strong>
+                                <span class="badge ${badgeClass} ms-2 small">${item.priorityLabel}</span>
+                                <div class="small text-muted">${item.patientName}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-dark border border-secondary text-info">~${item.estimatedWaitMinutes} mins</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                queueListElem.innerHTML = html;
+            } else {
+                queueListElem.innerHTML = '<div class="text-center text-muted py-4 small">No patients in queue</div>';
+            }
+        }
+
+        function connectGlobalWebSocket() {
+            const socket = new SockJS('/ws-queue');
+            const stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/topic/queue/all', function (message) {
+                    const queueData = JSON.parse(message.body);
+                    renderDoctorQueue(queueData);
+                });
+            }, function (err) {
+                setTimeout(connectGlobalWebSocket, 4000);
+            });
+        }
+    </script>
+</body>
+</html>
